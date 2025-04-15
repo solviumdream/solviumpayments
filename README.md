@@ -10,6 +10,14 @@ SolviumPayments was born to solve this. My goal was to build a modular, develope
 
 Whether you’re handling instant Pix charges, managing refunds, or splitting payments across accounts, SolviumPayments is designed to make your life easier with a clean API and straightforward setup. It’s all about saving time and reducing headaches for developers like me who just want payments to work.
 
+## But Isn’t There an Official SDK?
+
+Yes — [there is an official Go SDK provided by Efi](https://github.com/efipay/sdk-go-apis-efi/tree/main). However, in my opinion, it’s overly verbose, hard to follow, and not very idiomatic to Go. It’s essentially a thin wrapper over raw API requests using generic `map[string]interface{}` payloads, which can lead to confusing, error-prone code.
+
+That’s one of the main reasons I created SolviumPayments.
+
+I expect this pattern to hold true for many other payment systems I’ll integrate in the future. Rather than bending my code to fit inconsistent or poorly designed SDKs, I’m building a unified abstraction that feels natural in Go, is easier to maintain, and grows with my needs.
+
 ## Installation
 
 ```bash
