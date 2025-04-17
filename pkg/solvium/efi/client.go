@@ -32,20 +32,23 @@ type Token struct {
 }
 
 type Client struct {
-	ClientID         string
-	ClientSecret     string
-	Certificate      tls.Certificate
-	Environment      Environment
-	BaseURL          string
-	Token            *Token
-	HTTPClient       *http.Client
-	immediateCharges *ImmediateCharges
-	dueCharges       *DueCharges
-	pixSend          *PixSend
-	pixManagement    *PixManagement
-	payloadLocation  *PayloadLocation
-	batchDueCharges  *BatchDueCharges
-	paymentSplit     *PaymentSplit
+	ClientID           string
+	ClientSecret       string
+	Certificate        tls.Certificate
+	Environment        Environment
+	BaseURL            string
+	Token              *Token
+	HTTPClient         *http.Client
+	immediateCharges   *ImmediateCharges
+	dueCharges         *DueCharges
+	pixSend            *PixSend
+	pixManagement      *PixManagement
+	payloadLocation    *PayloadLocation
+	batchDueCharges    *BatchDueCharges
+	paymentSplit       *PaymentSplit
+	billPayment        *BillPayment
+	billPaymentWebhook *BillPaymentWebhookClient
+	openFinance        *OpenFinance
 }
 
 func NewClient(clientID, clientSecret string, certPath string, certPassword string, env Environment) (*Client, error) {
@@ -68,7 +71,6 @@ func NewClient(clientID, clientSecret string, certPath string, certPassword stri
 		Token:        nil,
 	}
 
-	
 	tlsConfig := &tls.Config{
 		Certificates: []tls.Certificate{cert},
 	}
@@ -82,7 +84,6 @@ func NewClient(clientID, clientSecret string, certPath string, certPassword stri
 
 	return client, nil
 }
-
 
 func NewClientFromP12(clientID, clientSecret string, p12Path string, p12Password string, env Environment) (*Client, error) {
 	cert, err := LoadCertificateFromP12(p12Path, p12Password)
@@ -104,7 +105,6 @@ func NewClientFromP12(clientID, clientSecret string, p12Path string, p12Password
 		Token:        nil,
 	}
 
-	
 	tlsConfig := &tls.Config{
 		Certificates: []tls.Certificate{cert},
 	}
@@ -179,14 +179,12 @@ func (c *Client) Request(method, path string, body io.Reader) (*http.Response, e
 	return c.HTTPClient.Do(req)
 }
 
-
 func (c *Client) ImmediateCharge() *ImmediateCharges {
 	if c.immediateCharges == nil {
 		c.immediateCharges = NewImmediateCharges(c)
 	}
 	return c.immediateCharges
 }
-
 
 func (c *Client) DueCharge() *DueCharges {
 	if c.dueCharges == nil {
@@ -195,14 +193,12 @@ func (c *Client) DueCharge() *DueCharges {
 	return c.dueCharges
 }
 
-
 func (c *Client) PixSend() *PixSend {
 	if c.pixSend == nil {
 		c.pixSend = NewPixSend(c)
 	}
 	return c.pixSend
 }
-
 
 func (c *Client) PixManagement() *PixManagement {
 	if c.pixManagement == nil {
@@ -211,14 +207,12 @@ func (c *Client) PixManagement() *PixManagement {
 	return c.pixManagement
 }
 
-
 func (c *Client) PayloadLocation() *PayloadLocation {
 	if c.payloadLocation == nil {
 		c.payloadLocation = NewPayloadLocation(c)
 	}
 	return c.payloadLocation
 }
-
 
 func (c *Client) BatchDueCharges() *BatchDueCharges {
 	if c.batchDueCharges == nil {
@@ -227,7 +221,6 @@ func (c *Client) BatchDueCharges() *BatchDueCharges {
 	return c.batchDueCharges
 }
 
-
 func (c *Client) PaymentSplit() *PaymentSplit {
 	if c.paymentSplit == nil {
 		c.paymentSplit = NewPaymentSplit(c)
@@ -235,6 +228,26 @@ func (c *Client) PaymentSplit() *PaymentSplit {
 	return c.paymentSplit
 }
 
+func (c *Client) BillPayment() *BillPayment {
+	if c.billPayment == nil {
+		c.billPayment = NewBillPayment(c)
+	}
+	return c.billPayment
+}
+
+func (c *Client) BillPaymentWebhook() *BillPaymentWebhookClient {
+	if c.billPaymentWebhook == nil {
+		c.billPaymentWebhook = NewBillPaymentWebhook(c)
+	}
+	return c.billPaymentWebhook
+}
+
+func (c *Client) OpenFinance() *OpenFinance {
+	if c.openFinance == nil {
+		c.openFinance = NewOpenFinance(c)
+	}
+	return c.openFinance
+}
 
 func (c *Client) VerifyStatus(id string, txType TransactionType) (*TransactionStatus, error) {
 	status := &TransactionStatus{
@@ -261,7 +274,6 @@ func (c *Client) VerifyStatus(id string, txType TransactionType) (*TransactionSt
 		return nil, err
 	}
 
-	
 	status.setMessage()
 
 	return status, nil
