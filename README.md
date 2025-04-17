@@ -21,7 +21,7 @@ I expect this pattern to hold true for many other payment systems I’ll integra
 ## Installation
 
 ```bash
-go get github.com/solviumpayments
+go get github.com/solviumdream/solviumpayments
 ```
 
 ## License
